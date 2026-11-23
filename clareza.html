@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#fff0e8">
+  <title>Seu Mapa | Beatriz Oliveira</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Allura&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --cream: #fff0e8;
+      --purple: #310b4c;
+      --purple-dark: #290640;
+      --orange: #ff9a68;
+      --orange-line: #ed8a5d;
+      --text-muted: #6a4d7a;
+      --space: clamp(16px, 4vw, 32px);
+      --card-radius: clamp(16px, 3vw, 24px);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      background: var(--cream);
+      color: var(--purple-dark);
+      font-family: "DM Sans", sans-serif;
+      overflow-x: hidden;
+      min-height: 100svh;
+      min-height: 100dvh;
+    }
+
+    .page {
+      position: relative;
+      isolation: isolate;
+      width: 100%;
+      min-height: 100svh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      padding-bottom: env(safe-area-inset-bottom, 0);
+    }
+
+    .shape { position: absolute; z-index: -1; pointer-events: none; }
+    .top-orb {
+      width: min(76vw, 420px);
+      aspect-ratio: 1;
+      left: -28vw;
+      top: -15vw;
+      border-radius: 50%;
+      background: #fbe2d7;
+      opacity: .72;
+    }
+
+    .header {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: var(--space);
+      padding: var(--space) var(--space) 0;
+      width: 100%;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      white-space: nowrap;
+      text-decoration: none;
+      color: inherit;
+    }
+    .brand-symbol { display: block; width: clamp(40px, 8vw, 60px); height: auto; flex: none; }
+    .brand-name {
+      color: var(--purple-dark);
+      font-size: clamp(15px, 3.2vw, 22px);
+      line-height: .98;
+      letter-spacing: -.8px;
+      font-weight: 500;
+    }
+    .header-tag {
+      font-size: clamp(9px, 1.8vw, 12px);
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--purple);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .header-tag::after {
+      content: '';
+      display: block;
+      width: 40px;
+      height: 1px;
+      background: var(--purple);
+      opacity: 0.3;
+    }
+
+    .compass-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin: clamp(24px, 6vw, 50px) auto clamp(16px, 4vw, 24px);
+      width: 100%;
+      max-width: 600px;
+      padding: 0 var(--space);
+      z-index: 2;
+      position: relative;
+    }
+    .compass-divider .line {
+      flex: 1; height: 1px; background: var(--orange-line); opacity: 0.5;
+    }
+    .compass-icon { width: clamp(48px, 10vw, 64px); height: auto; }
+
+    .main-content {
+      flex: 1;
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 var(--space) clamp(80px, 15vw, 160px);
+      z-index: 2;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: clamp(20px, 4vw, 32px);
+    }
+
+    .result-header { text-align: center; width: 100%; }
+    .result-eyebrow {
+      font-size: clamp(11px, 2.5vw, 13px);
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--orange-line);
+      margin-bottom: 8px;
+    }
+    .result-title {
+      font-family: "Allura", cursive;
+      font-size: clamp(46px, 11vw, 76px);
+      color: var(--orange);
+      line-height: 0.9;
+      margin: 0 0 8px;
+      transform: rotate(-2deg);
+    }
+    .result-subtitle {
+      font-size: clamp(14px, 3vw, 18px);
+      color: var(--text-muted);
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    .result-card {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(49, 11, 76, 0.08);
+      border-radius: var(--card-radius);
+      padding: clamp(20px, 5vw, 40px);
+      box-shadow: 0 8px 28px rgba(49, 11, 76, 0.08);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+
+    .markdown { font-size: clamp(15px, 3vw, 17px); line-height: 1.65; color: var(--purple-dark); }
+    .markdown h1, .markdown h2, .markdown h3 {
+      color: var(--purple);
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      margin: 1.4em 0 0.6em;
+      line-height: 1.25;
+    }
+    .markdown h1 { font-size: clamp(24px, 5vw, 32px); margin-top: 0; }
+    .markdown h2 { font-size: clamp(20px, 4vw, 26px); }
+    .markdown h3 { font-size: clamp(17px, 3.5vw, 21px); }
+    .markdown p { margin: 0 0 1em; }
+    .markdown strong { color: var(--purple); font-weight: 700; }
+    .markdown em { color: var(--text-muted); font-style: italic; }
+    .markdown ul, .markdown ol { padding-left: 1.2em; margin: 0 0 1em; }
+    .markdown li { margin-bottom: 0.5em; }
+    .markdown hr {
+      border: none;
+      border-top: 1px solid rgba(49, 11, 76, 0.12);
+      margin: 1.6em 0;
+    }
+    .markdown blockquote {
+      border-left: 3px solid var(--orange-line);
+      margin: 1em 0;
+      padding: 0.4em 1em;
+      color: var(--text-muted);
+      font-style: italic;
+      background: rgba(237, 138, 93, 0.06);
+      border-radius: 0 8px 8px 0;
+    }
+
+    /* ==========================================
+       SEÇÃO DE OFERTAS
+       ========================================== */
+    .offers-section {
+      width: 100%;
+      margin-top: clamp(12px, 3vw, 24px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: clamp(16px, 3vw, 24px);
+    }
+
+    .offers-header {
+      text-align: center;
+      max-width: 620px;
+    }
+    .offers-eyebrow {
+      font-size: clamp(11px, 2.4vw, 13px);
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--orange-line);
+      margin-bottom: 8px;
+    }
+    .offers-title {
+      font-size: clamp(22px, 5vw, 32px);
+      font-weight: 800;
+      color: var(--purple-dark);
+      letter-spacing: -0.8px;
+      line-height: 1.15;
+      margin: 0 0 6px;
+    }
+    .offers-subtitle {
+      font-size: clamp(14px, 3vw, 16px);
+      color: var(--text-muted);
+      margin: 0;
+      line-height: 1.45;
+    }
+
+    .offers-grid {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: clamp(14px, 3vw, 20px);
+    }
+    @media (min-width: 760px) {
+      .offers-grid { grid-template-columns: repeat(3, 1fr); align-items: stretch; }
+    }
+
+    .offer-card {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      border: 1px solid rgba(49, 11, 76, 0.08);
+      border-radius: var(--card-radius);
+      padding: clamp(20px, 4vw, 28px);
+      box-shadow: 0 8px 24px rgba(49, 11, 76, 0.07);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      overflow: hidden;
+    }
+    .offer-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 32px rgba(49, 11, 76, 0.12);
+    }
+
+    /* Card em destaque (curso) */
+    .offer-card.is-featured {
+      border: 1.5px solid rgba(237, 138, 93, 0.6);
+      background: linear-gradient(180deg, #fffaf6, #ffffff 60%);
+    }
+    .offer-badge {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: #fff;
+      background: linear-gradient(105deg, #ff9a68, #ed7a4a);
+      padding: 5px 10px;
+      border-radius: 999px;
+      box-shadow: 0 4px 10px rgba(237, 138, 93, 0.35);
+    }
+
+    .offer-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 14px;
+      background: rgba(49, 11, 76, 0.06);
+      color: var(--purple);
+      flex-shrink: 0;
+    }
+    .offer-icon svg { width: 24px; height: 24px; }
+    .offer-card.is-featured .offer-icon {
+      background: rgba(237, 138, 93, 0.15);
+      color: var(--orange-line);
+    }
+
+    .offer-type {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--orange-line);
+      margin-bottom: 4px;
+    }
+    .offer-name {
+      font-size: clamp(17px, 3.4vw, 20px);
+      font-weight: 800;
+      color: var(--purple-dark);
+      letter-spacing: -0.4px;
+      line-height: 1.25;
+      margin: 0 0 8px;
+    }
+    .offer-desc {
+      font-size: clamp(13px, 2.8vw, 14.5px);
+      color: var(--text-muted);
+      line-height: 1.5;
+      margin: 0 0 16px;
+      flex: 1;
+    }
+    .offer-price {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin: 0 0 14px;
+      color: var(--purple-dark);
+    }
+    .offer-price-prefix {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    .offer-price-value {
+      font-size: clamp(22px, 4.6vw, 28px);
+      font-weight: 800;
+      letter-spacing: -0.6px;
+    }
+    .offer-price-suffix {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .offer-cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      min-height: 46px;
+      padding: 0 18px;
+      border-radius: 999px;
+      font-size: clamp(13px, 2.8vw, 15px);
+      font-weight: 700;
+      letter-spacing: -0.2px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+      border: none;
+      font-family: inherit;
+    }
+    .offer-cta svg { width: 16px; height: 16px; }
+
+    /* Variações do CTA */
+    .offer-cta.is-primary {
+      color: #fff;
+      background: linear-gradient(105deg, #4a126c, #290640);
+      box-shadow: 0 8px 18px rgba(54, 12, 72, 0.22);
+    }
+    .offer-cta.is-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 22px rgba(54, 12, 72, 0.3);
+    }
+
+    .offer-cta.is-accent {
+      color: #fff;
+      background: linear-gradient(105deg, #ff9a68, #ed7a4a);
+      box-shadow: 0 8px 18px rgba(237, 138, 93, 0.35);
+    }
+    .offer-cta.is-accent:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 22px rgba(237, 138, 93, 0.45);
+    }
+
+    .offer-cta.is-ghost {
+      color: var(--purple);
+      background: rgba(49, 11, 76, 0.06);
+      border: 1.5px solid rgba(49, 11, 76, 0.18);
+    }
+    .offer-cta.is-ghost:hover {
+      background: rgba(49, 11, 76, 0.1);
+      transform: translateY(-2px);
+    }
+
+    /* Rodapé simples */
+    .result-footer {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin-top: clamp(20px, 4vw, 32px);
+    }
+    .btn-back {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 8px 14px;
+      border-radius: 999px;
+      transition: color 0.2s ease, background 0.2s ease;
+    }
+    .btn-back:hover {
+      color: var(--purple);
+      background: rgba(49, 11, 76, 0.05);
+    }
+
+    /* Estado vazio */
+    .empty-state {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      text-align: center;
+      padding: clamp(30px, 8vw, 60px) 0;
+    }
+    .empty-state.is-active { display: flex; }
+    .empty-state h2 { margin: 0; }
+    .empty-state p { margin: 0; color: var(--text-muted); }
+
+    /* Ondas */
+    .bottom-orange, .bottom-purple { position: absolute; z-index: -1; }
+    .bottom-orange {
+      left: -12%; bottom: -7.5%; width: 92%; height: 22%;
+      background: linear-gradient(135deg, #ffa273, #ff9868);
+      border-radius: 0 76% 0 0 / 0 82% 0 0;
+      transform: rotate(5deg);
+      transform-origin: left bottom;
+    }
+    .bottom-purple {
+      right: -15%; bottom: -10%; width: 66%; height: 19%;
+      background: linear-gradient(145deg, #5b1c76, #310b4c 78%);
+      border-radius: 90% 0 0 0 / 72% 0 0 0;
+      transform: rotate(-5deg);
+    }
+    .bottom-line {
+      position: absolute; z-index: 0; left: 0; bottom: -1%;
+      width: 100%; height: 34%; pointer-events: none;
+    }
+
+    @media (min-width: 600px) {
+      .bottom-orange { height: 30%; bottom: -11%; }
+      .bottom-purple { height: 24%; bottom: -12%; }
+      .bottom-line { height: 40%; }
+      .top-orb { width: 340px; left: -130px; top: -95px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .offer-card { transition: none; }
+      .offer-cta { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="shape top-orb" aria-hidden="true"></div>
+
+    <header class="header">
+      <a href="/index.html" class="brand" aria-label="Beatriz Oliveira">
+        <svg class="brand-symbol" viewBox="0 0 110 120" role="img" aria-label="Símbolo B">
+          <defs>
+            <linearGradient id="bGradient" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#8d3b91"/>
+              <stop offset=".55" stop-color="#4a126c"/>
+              <stop offset="1" stop-color="#2e0848"/>
+            </linearGradient>
+          </defs>
+          <path d="M12 7 H48 C77 7 91 20 91 39 C91 55 78 65 59 69 C84 70 101 82 101 98 C101 111 88 116 61 116 H12 Z" fill="none" stroke="url(#bGradient)" stroke-width="5.5" stroke-linecap="square" stroke-linejoin="round"/>
+          <path d="M12 7 V116" fill="none" stroke="url(#bGradient)" stroke-width="5.5"/>
+          <path d="M12 77 C27 63 42 55 60 48 C78 41 83 28 75 18 C69 10 58 7 45 7" fill="none" stroke="url(#bGradient)" stroke-width="5.5" stroke-linecap="round"/>
+          <path d="M58 58 L80 72 Q85 75 80 79 L58 94 Q52 98 52 90 V63 Q52 55 58 58Z" fill="#f58a5b"/>
+        </svg>
+        <div class="brand-name">Beatriz<br>Oliveira</div>
+      </a>
+      <div class="header-tag">Mapa da Clareza</div>
+    </header>
+
+    <div class="compass-divider">
+      <div class="line"></div>
+      <svg class="compass-icon" viewBox="0 0 260 300" aria-hidden="true">
+        <defs>
+          <linearGradient id="compassOrange" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#ffad79"/>
+            <stop offset=".52" stop-color="#e9784e"/>
+            <stop offset="1" stop-color="#c95e43"/>
+          </linearGradient>
+        </defs>
+        <circle cx="130" cy="158" r="105" fill="none" stroke="#ed8b60" stroke-width="6"/>
+        <path d="M130 2 L147 145 L130 158 L113 145Z" fill="url(#compassOrange)"/>
+        <path d="M130 298 L113 171 L130 158 L147 171Z" fill="url(#compassOrange)"/>
+        <path d="M0 158 L116 141 L130 158 L116 175Z" fill="#e77c52"/>
+        <path d="M260 158 L144 175 L130 158 L144 141Z" fill="#e77c52"/>
+        <path d="M39 67 L128 145 L130 158 L111 151Z" fill="#d86e4c"/>
+        <path d="M221 67 L149 151 L130 158 L132 145Z" fill="#d86e4c"/>
+        <path d="M39 249 L111 165 L130 158 L128 171Z" fill="#d86e4c"/>
+        <path d="M221 249 L132 171 L130 158 L149 165Z" fill="#d86e4c"/>
+        <circle cx="130" cy="158" r="4" fill="#a84a42"/>
+      </svg>
+      <div class="line"></div>
+    </div>
+
+    <section class="main-content">
+      <!-- Estado com análise -->
+      <div id="resultWrap" style="width:100%; display:none;">
+        <div class="result-header">
+          <div class="result-eyebrow">Seu mapa está pronto</div>
+          <h1 class="result-title">Clareza</h1>
+          <p class="result-subtitle">Aqui está o retrato do seu momento — e o próximo passo.</p>
+        </div>
+
+        <div class="result-card" style="margin-top: clamp(20px,4vw,32px);">
+          <article class="markdown" id="analiseContent"></article>
+        </div>
+
+        <!-- ==========================================
+             SEÇÃO DE OFERTAS
+             ========================================== -->
+        <section class="offers-section">
+          <div class="offers-header">
+            <div class="offers-eyebrow">Para continuar a jornada</div>
+            <h2 class="offers-title">O próximo passo, do seu jeito</h2>
+            <p class="offers-subtitle">
+              Escolha o formato que combina com o momento em que você está.
+            </p>
+          </div>
+
+          <div class="offers-grid">
+            <!-- OFERTA 1 — E-book -->
+            <article class="offer-card">
+              <div class="offer-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                  <path d="M8 7h8"/>
+                  <path d="M8 11h6"/>
+                </svg>
+              </div>
+              <div class="offer-type">E-book</div>
+              <h3 class="offer-name">A Arte de Saber Onde Está</h3>
+              <p class="offer-desc">
+                Um guia curto e direto para sair da neblina e enxergar com clareza onde você está — e o que fazer a seguir.
+              </p>
+              <div class="offer-price">
+                <span class="offer-price-prefix">A partir de</span>
+                <span class="offer-price-value">R$ 4,99</span>
+              </div>
+              <a href="#" class="offer-cta is-ghost" data-offer="ebook">
+                Quero o e-book
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14"/>
+                  <path d="m12 5 7 7-7 7"/>
+                </svg>
+              </a>
+            </article>
+
+            <!-- OFERTA 2 — Curso (destaque) -->
+            <article class="offer-card is-featured">
+              <span class="offer-badge">Mais escolhido</span>
+              <div class="offer-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                  <path d="M6 12v5c0 1.7 3 3 6 3s6-1.3 6-3v-5"/>
+                </svg>
+              </div>
+              <div class="offer-type">Curso</div>
+              <h3 class="offer-name">Marketing OFF</h3>
+              <p class="offer-desc">
+                Um curso para quem quer parar de depender de sorte nas redes e construir uma presença com método, constância e direção.
+              </p>
+              <div class="offer-price">
+                <span class="offer-price-prefix">Investimento</span>
+                <span class="offer-price-value">R$ 297,36</span>
+              </div>
+              <a href="#" class="offer-cta is-accent" data-offer="curso">
+                Conhecer o curso
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14"/>
+                  <path d="m12 5 7 7-7 7"/>
+                </svg>
+              </a>
+            </article>
+
+            <!-- OFERTA 3 — Consultoria -->
+            <article class="offer-card">
+              <div class="offer-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8z"/>
+                </svg>
+              </div>
+              <div class="offer-type">Consultoria</div>
+              <h3 class="offer-name">Sessão Individual</h3>
+              <p class="offer-desc">
+                Um encontro 1:1 para olhar para o seu negócio de perto e sair com um plano de ação desenhado para o seu contexto.
+              </p>
+              <div class="offer-price">
+                <span class="offer-price-prefix">Valor</span>
+                <span class="offer-price-value">sob consulta</span>
+              </div>
+              <a href="#" class="offer-cta is-primary" data-offer="consultoria">
+                Falar no WhatsApp
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M5 12h14"/>
+                  <path d="m12 5 7 7-7 7"/>
+                </svg>
+              </a>
+            </article>
+          </div>
+        </section>
+
+        <div class="result-footer">
+          <a class="btn-back" href="/index.html">← Voltar ao início</a>
+        </div>
+      </div>
+
+      <!-- Estado vazio -->
+      <div class="empty-state" id="emptyState">
+        <h2>Nenhum diagnóstico encontrado</h2>
+        <p>Parece que você chegou aqui sem ter feito o mapa. Vamos começar?</p>
+        <a class="btn-primary" href="/questions.html" style="display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 28px;border-radius:999px;color:#fff;background:linear-gradient(105deg,#4a126c,#290640);text-decoration:none;font-weight:700;">
+          Fazer o diagnóstico
+        </a>
+      </div>
+    </section>
+
+    <div class="bottom-orange" aria-hidden="true"></div>
+    <div class="bottom-purple" aria-hidden="true"></div>
+    <svg class="bottom-line" viewBox="0 0 1200 420" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M80 420 C180 300 300 330 425 275 C560 215 650 245 790 170 C930 95 1030 145 1145 5" fill="none" stroke="#f18a5c" stroke-width="5" stroke-linecap="round"/>
+    </svg>
+  </main>
+
+  <script>
+    // ==========================================
+    // MINI PARSER DE MARKDOWN
+    // ==========================================
+    function escapeHtml(str) {
+      return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    function inlineFormat(text) {
+      return text
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>');
+    }
+
+    function markdownToHtml(md) {
+      if (!md) return '';
+      const lines = md.replace(/\r\n/g, '\n').split('\n');
+      let html = '';
+      let inList = false;
+      const closeList = () => { if (inList) { html += '</ul>'; inList = false; } };
+
+      for (let raw of lines) {
+        const line = raw.trim();
+        if (!line) { closeList(); continue; }
+
+        if (/^---+$/.test(line)) { closeList(); html += '<hr>'; continue; }
+
+        const h = line.match(/^(#{1,6})\s+(.*)$/);
+        if (h) {
+          closeList();
+          const level = Math.min(h[1].length, 3);
+          html += `<h${level}>${inlineFormat(escapeHtml(h[2]))}</h${level}>`;
+          continue;
+        }
+
+        if (/^\*[^*].*\*$/.test(line)) {
+          closeList();
+          html += `<p><em>${inlineFormat(escapeHtml(line.slice(1, -1)))}</em></p>`;
+          continue;
+        }
+
+        if (line.startsWith('> ')) {
+          closeList();
+          html += `<blockquote>${inlineFormat(escapeHtml(line.slice(2)))}</blockquote>`;
+          continue;
+        }
+
+        if (/^[-*]\s+/.test(line)) {
+          if (!inList) { html += '<ul>'; inList = true; }
+          html += `<li>${inlineFormat(escapeHtml(line.replace(/^[-*]\s+/, '')))}</li>`;
+          continue;
+        }
+
+        closeList();
+        html += `<p>${inlineFormat(escapeHtml(line))}</p>`;
+      }
+
+      closeList();
+      return html;
+    }
+
+    // ==========================================
+    // RENDER DO RESULTADO
+    // ==========================================
+    document.addEventListener('DOMContentLoaded', () => {
+      const analise = sessionStorage.getItem('diagnosticoAnalise');
+      const resultWrap = document.getElementById('resultWrap');
+      const emptyState = document.getElementById('emptyState');
+      const content = document.getElementById('analiseContent');
+
+      if (analise && analise.trim().length > 0) {
+        content.innerHTML = markdownToHtml(analise);
+        resultWrap.style.display = 'block';
+      } else {
+        emptyState.classList.add('is-active');
+      }
+
+      // ==========================================
+      // AQUI VOCÊ CONFIGURA OS LINKS REAIS DAS OFERTAS
+      // ==========================================
+      const LINKS = {
+        ebook: '#',           // ex: 'https://pay.hotmart.com/...' ou link do Kiwify
+        curso: '#',           // ex: 'https://pay.kiwify.com.br/...'
+        consultoria: '#',     // ex: 'https://wa.me/55SEUNUMERO?text=...'
+      };
+
+      document.querySelectorAll('[data-offer]').forEach((btn) => {
+        const tipo = btn.getAttribute('data-offer');
+        if (LINKS[tipo] && LINKS[tipo] !== '#') {
+          btn.setAttribute('href', LINKS[tipo]);
+          btn.setAttribute('target', '_blank');
+          btn.setAttribute('rel', 'noopener noreferrer');
+        } else {
+          // Enquanto o link real não está configurado, evita navegação acidental
+          btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.info(`[oferta] link de "${tipo}" ainda não configurado`);
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

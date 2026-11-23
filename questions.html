@@ -2,9 +2,12 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#fff0e8">
   <title>Diagnóstico | Beatriz Oliveira</title>
+
+  <link rel="preconnect" href="https://beatrizoliveira-sigma.vercel.app" crossorigin>
+  <link rel="prefetch" href="https://beatrizoliveira-sigma.vercel.app/api/perguntas" as="fetch" crossorigin>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,15 +23,19 @@
       --orange: #ff9a68;
       --orange-line: #ed8a5d;
       --text-muted: #6a4d7a;
+      --space: clamp(16px, 4vw, 32px);
     }
 
     * { box-sizing: border-box; }
     html, body { margin: 0; min-height: 100%; }
+    html { -webkit-text-size-adjust: 100%; }
     body {
       background: var(--cream);
       color: var(--purple-dark);
       font-family: "DM Sans", sans-serif;
       overflow-x: hidden;
+      min-height: 100svh;
+      min-height: 100dvh;
     }
 
     .page {
@@ -36,10 +43,11 @@
       isolation: isolate;
       width: 100%;
       min-height: 100svh;
+      min-height: 100dvh;
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      padding-bottom: 120px;
+      padding-bottom: env(safe-area-inset-bottom, 0);
     }
 
     .shape { position: absolute; z-index: -1; pointer-events: none; }
@@ -60,9 +68,10 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      padding: 24px 24px 0;
+      gap: var(--space);
+      padding: var(--space) var(--space) 0;
       width: 100%;
-      max-width: 900px;
+      max-width: 1000px;
       margin: 0 auto;
     }
 
@@ -75,17 +84,22 @@
       color: inherit;
     }
 
-    .brand-symbol { display: block; width: 48px; height: 54px; flex: none; }
+    .brand-symbol {
+      display: block;
+      width: clamp(40px, 8vw, 60px);
+      height: auto;
+      flex: none;
+    }
     .brand-name {
       color: var(--purple-dark);
-      font-size: 18px;
+      font-size: clamp(15px, 3.2vw, 22px);
       line-height: .98;
       letter-spacing: -.8px;
       font-weight: 500;
     }
 
     .header-tag {
-      font-size: 11px;
+      font-size: clamp(9px, 1.8vw, 12px);
       font-weight: 700;
       letter-spacing: 2px;
       text-transform: uppercase;
@@ -107,11 +121,11 @@
     .progress-container {
       width: 100%;
       max-width: 800px;
-      margin: 40px auto 0;
-      padding: 0 24px;
+      margin: clamp(24px, 6vw, 60px) auto 0;
+      padding: 0 var(--space);
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
       z-index: 2;
       position: relative;
     }
@@ -133,7 +147,7 @@
     }
 
     .progress-text {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 600;
       color: var(--purple);
       white-space: nowrap;
@@ -144,10 +158,10 @@
       align-items: center;
       justify-content: center;
       gap: 16px;
-      margin: 40px auto 24px;
+      margin: clamp(24px, 6vw, 50px) auto clamp(16px, 4vw, 24px);
       width: 100%;
       max-width: 600px;
-      padding: 0 24px;
+      padding: 0 var(--space);
       z-index: 2;
       position: relative;
     }
@@ -160,7 +174,7 @@
     }
 
     .compass-icon {
-      width: 60px;
+      width: clamp(48px, 10vw, 64px);
       height: auto;
     }
 
@@ -169,27 +183,30 @@
       width: 100%;
       max-width: 720px;
       margin: 0 auto;
-      padding: 0 24px;
+      padding: 0 var(--space) clamp(80px, 15vw, 160px);
       z-index: 2;
       position: relative;
       display: flex;
       flex-direction: column;
       align-items: center;
+      gap: clamp(20px, 4vw, 32px);
     }
 
     h1 {
       text-align: center;
-      font-size: clamp(28px, 6vw, 44px);
+      font-size: clamp(26px, 6.5vw, 44px);
       font-weight: 800;
       line-height: 1.1;
       letter-spacing: -1.5px;
-      margin: 0 0 12px;
+      margin: 0;
       color: var(--purple-dark);
+      transition: opacity 0.2s ease, transform 0.2s ease;
     }
+    h1.is-changing { opacity: 0; transform: translateY(6px); }
 
     .title-script {
       font-family: "Allura", cursive;
-      font-size: clamp(52px, 10vw, 76px);
+      font-size: clamp(48px, 11vw, 76px);
       font-weight: 400;
       color: var(--orange);
       line-height: 0.8;
@@ -200,49 +217,60 @@
 
     .subtitle {
       text-align: center;
-      font-size: clamp(16px, 3vw, 20px);
+      font-size: clamp(14px, 3vw, 18px);
       color: var(--text-muted);
-      margin: 0 0 40px;
+      margin: 0;
       line-height: 1.4;
     }
 
     .options-list {
       width: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      margin-bottom: 40px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: clamp(12px, 2vw, 16px);
+      transition: opacity 0.2s ease;
+    }
+    .options-list.is-changing { opacity: 0; }
+
+    @media (min-width: 900px) {
+      .options-list { grid-template-columns: 1fr 1fr; }
     }
 
     .option-card {
       display: flex;
       align-items: center;
-      gap: 20px;
-      padding: 20px 24px;
-      background: rgba(255, 255, 255, 0.7);
+      gap: 16px;
+      padding: clamp(14px, 3vw, 20px) clamp(16px, 3.5vw, 24px);
+      background: rgba(255, 255, 255, 0.75);
       border: 1.5px solid rgba(255, 255, 255, 0.9);
-      border-radius: 20px;
+      border-radius: clamp(14px, 3vw, 20px);
       cursor: pointer;
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 20px rgba(49, 11, 76, 0.04);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+      box-shadow: 0 4px 20px rgba(49, 11, 76, 0.05);
       position: relative;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
     }
 
-    .option-card:hover {
-      background: rgba(255, 255, 255, 0.95);
+    .option-card:hover,
+    .option-card:focus-visible {
+      background: rgba(255, 255, 255, 0.98);
       transform: translateY(-2px);
-      box-shadow: 0 8px 24px rgba(49, 11, 76, 0.08);
+      box-shadow: 0 8px 24px rgba(49, 11, 76, 0.1);
+      outline: none;
     }
+
+    .option-card:active { transform: translateY(0); }
 
     .option-card input[type="radio"] {
       position: absolute;
       opacity: 0;
-      cursor: pointer;
+      pointer-events: none;
     }
 
     .radio-circle {
-      width: 28px;
-      height: 28px;
+      width: clamp(22px, 5vw, 28px);
+      height: clamp(22px, 5vw, 28px);
       border: 2px solid #d5c1d5;
       border-radius: 50%;
       display: flex;
@@ -254,136 +282,77 @@
 
     .radio-circle::after {
       content: '';
-      width: 14px;
-      height: 14px;
+      width: clamp(10px, 2.5vw, 14px);
+      height: clamp(10px, 2.5vw, 14px);
       background: var(--purple);
       border-radius: 50%;
       transform: scale(0);
       transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
-    .option-card:has(input:checked) {
+    .option-card.is-selected {
       border-color: var(--purple);
       background: #fff;
       box-shadow: 0 8px 24px rgba(49, 11, 76, 0.12);
     }
-
-    .option-card:has(input:checked) .radio-circle {
-      border-color: var(--purple);
-    }
-
-    .option-card:has(input:checked) .radio-circle::after {
-      transform: scale(1);
-    }
-
-    .option-card:has(input:checked) .option-letter {
-      color: var(--purple);
-      border-color: var(--purple);
-    }
+    .option-card.is-selected .radio-circle { border-color: var(--purple); }
+    .option-card.is-selected .radio-circle::after { transform: scale(1); }
+    .option-card.is-selected .option-letter { color: var(--purple); border-color: var(--purple); }
 
     .option-letter {
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 32px;
-      height: 32px;
+      width: clamp(26px, 6vw, 32px);
+      height: clamp(26px, 6vw, 32px);
       border-radius: 8px;
-      background: transparent;
       border: 1.5px solid #d5c1d5;
       color: var(--text-muted);
       font-weight: 700;
-      font-size: 14px;
+      font-size: clamp(12px, 2.5vw, 14px);
       flex-shrink: 0;
       transition: all 0.2s ease;
     }
 
     .option-text {
-      font-size: clamp(15px, 2.5vw, 18px);
+      font-size: clamp(14px, 3vw, 17px);
       font-weight: 500;
       color: var(--purple-dark);
       line-height: 1.3;
     }
-
-    .btn-continue {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      min-height: 60px;
-      padding: 0 48px;
-      border: none;
-      border-radius: 999px;
-      color: #fff;
-      background: linear-gradient(105deg, #4a126c, #290640);
-      box-shadow: 0 8px 20px rgba(54, 12, 72, 0.25);
-      text-decoration: none;
-      font-family: inherit;
-      font-size: clamp(16px, 3vw, 20px);
-      font-weight: 700;
-      letter-spacing: -.35px;
-      cursor: pointer;
-      transition: transform .2s ease, box-shadow .2s ease, opacity 0.2s ease;
-    }
-
-    .btn-continue:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 24px rgba(54, 12, 72, 0.3);
-    }
-
-    .btn-continue:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none;
-    }
-
-    .btn-continue svg { width: 24px; height: 24px; }
 
     .security-note {
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      margin-top: 24px;
-      font-size: 13px;
+      margin-top: clamp(12px, 3vw, 20px);
+      font-size: clamp(11px, 2.2vw, 13px);
       color: var(--text-muted);
       font-weight: 500;
+      text-align: center;
+      padding: 0 var(--space);
     }
+    .security-note svg { width: 14px; height: 14px; flex: none; }
 
-    .security-note svg { width: 16px; height: 16px; }
-
+    .bottom-orange,
+    .bottom-purple { position: absolute; z-index: -1; }
     .bottom-orange {
-      position: absolute;
-      z-index: -1;
-      left: -12%;
-      bottom: -7.5%;
-      width: 92%;
-      height: 22%;
+      left: -12%; bottom: -7.5%; width: 92%; height: 22%;
       background: linear-gradient(135deg, #ffa273, #ff9868);
       border-radius: 0 76% 0 0 / 0 82% 0 0;
       transform: rotate(5deg);
       transform-origin: left bottom;
     }
-
     .bottom-purple {
-      position: absolute;
-      z-index: -1;
-      right: -15%;
-      bottom: -10%;
-      width: 66%;
-      height: 19%;
+      right: -15%; bottom: -10%; width: 66%; height: 19%;
       background: linear-gradient(145deg, #5b1c76, #310b4c 78%);
       border-radius: 90% 0 0 0 / 72% 0 0 0;
       transform: rotate(-5deg);
     }
-
     .bottom-line {
-      position: absolute;
-      z-index: 0;
-      left: 0;
-      bottom: -1%;
-      width: 100%;
-      height: 34%;
-      pointer-events: none;
+      position: absolute; z-index: 0; left: 0; bottom: -1%;
+      width: 100%; height: 34%; pointer-events: none;
     }
 
     .skeleton {
@@ -394,7 +363,6 @@
       color: transparent !important;
       pointer-events: none;
     }
-
     @keyframes shimmer {
       0% { background-position: 200% 0; }
       100% { background-position: -200% 0; }
@@ -404,22 +372,100 @@
       background: #fff0f0;
       border: 1px solid #ffcccc;
       color: #cc0000;
-      padding: 16px 24px;
+      padding: 14px 20px;
       border-radius: 12px;
-      margin-bottom: 24px;
       text-align: center;
       display: none;
+      font-size: 14px;
+      width: 100%;
+    }
+
+    /* ==========================================
+       TELA DE LOADING (aparece no submit)
+       ========================================== */
+    .loading-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: var(--cream);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space);
+      text-align: center;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+    .loading-screen.is-active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .loading-compass {
+      width: clamp(90px, 22vw, 140px);
+      height: auto;
+      margin-bottom: clamp(24px, 6vw, 40px);
+      animation: spinCompass 2.4s linear infinite;
+    }
+    @keyframes spinCompass {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .loading-title {
+      font-family: "Allura", cursive;
+      font-size: clamp(38px, 9vw, 58px);
+      color: var(--orange);
+      line-height: 1;
+      margin: 0 0 8px;
+      transform: rotate(-2deg);
+    }
+
+    .loading-subtitle {
+      font-size: clamp(15px, 3.5vw, 20px);
+      color: var(--purple-dark);
+      font-weight: 600;
+      margin: 0 0 clamp(20px, 5vw, 32px);
+      line-height: 1.3;
+    }
+
+    .loading-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 360px;
+      width: 100%;
+    }
+    .loading-step {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: clamp(13px, 2.8vw, 15px);
+      color: var(--text-muted);
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+    }
+    .loading-step.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .loading-step.is-done { color: var(--purple); }
+
+    .loading-step-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #d5c1d5;
+      flex-shrink: 0;
+      transition: background 0.3s ease;
+    }
+    .loading-step.is-done .loading-step-dot {
+      background: var(--purple);
     }
 
     @media (min-width: 600px) {
-      .page { padding-bottom: 160px; }
-      .header { padding: 40px 40px 0; }
-      .brand-symbol { width: 60px; height: 68px; }
-      .brand-name { font-size: 22px; }
-      .progress-container { margin-top: 60px; }
-      .compass-divider { margin-top: 50px; }
-      .options-list { gap: 20px; }
-      .option-card { padding: 24px 32px; }
       .bottom-orange { height: 30%; bottom: -11%; }
       .bottom-purple { height: 24%; bottom: -12%; }
       .bottom-line { height: 40%; }
@@ -427,8 +473,9 @@
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .btn-continue, .option-card, .radio-circle::after, .progress-fill { transition: none; }
+      .option-card, .radio-circle::after, .progress-fill, h1, .options-list { transition: none; }
       .skeleton { animation: none; }
+      .loading-compass { animation: none; }
     }
   </style>
 </head>
@@ -437,7 +484,7 @@
     <div class="shape top-orb" aria-hidden="true"></div>
 
     <header class="header">
-      <a href="#" class="brand" aria-label="Beatriz Oliveira">
+      <a href="/index.html" class="brand" aria-label="Beatriz Oliveira">
         <svg class="brand-symbol" viewBox="0 0 110 120" role="img" aria-label="Símbolo B">
           <defs>
             <linearGradient id="bGradient" x1="0" y1="0" x2="1" y2="1">
@@ -500,26 +547,15 @@
       </h1>
       <p class="subtitle" id="questionSubtitle">Escolha a opção que mais se parece com você:</p>
 
-      <form id="diagnosticForm">
-        <div class="options-list" id="optionsContainer"></div>
+      <div class="options-list" id="optionsContainer" role="radiogroup" aria-label="Opções de resposta"></div>
 
-        <div style="display: flex; flex-direction: column; align-items: center;">
-          <button type="submit" class="btn-continue" id="btnContinue" disabled>
-            <span id="btnText">Continuar</span>
-            <svg viewBox="0 0 40 40" fill="none" aria-hidden="true">
-              <path d="M5 20H32M21 8L33 20L21 32" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </button>
-
-          <div class="security-note">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-            </svg>
-            Suas respostas são confidenciais
-          </div>
-        </div>
-      </form>
+      <div class="security-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        Suas respostas são confidenciais
+      </div>
     </section>
 
     <div class="bottom-orange" aria-hidden="true"></div>
@@ -529,61 +565,134 @@
     </svg>
   </main>
 
+  <!-- ==========================================
+       TELA DE LOADING (overlay)
+       ========================================== -->
+  <div class="loading-screen" id="loadingScreen" aria-live="polite" aria-busy="true">
+    <svg class="loading-compass" viewBox="0 0 260 300" aria-hidden="true">
+      <defs>
+        <linearGradient id="loadingCompassGradient" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#ffad79"/>
+          <stop offset=".52" stop-color="#e9784e"/>
+          <stop offset="1" stop-color="#c95e43"/>
+        </linearGradient>
+      </defs>
+      <circle cx="130" cy="158" r="105" fill="none" stroke="#ed8b60" stroke-width="6"/>
+      <path d="M130 2 L147 145 L130 158 L113 145Z" fill="url(#loadingCompassGradient)"/>
+      <path d="M130 298 L113 171 L130 158 L147 171Z" fill="url(#loadingCompassGradient)"/>
+      <path d="M0 158 L116 141 L130 158 L116 175Z" fill="#e77c52"/>
+      <path d="M260 158 L144 175 L130 158 L144 141Z" fill="#e77c52"/>
+      <circle cx="130" cy="158" r="4" fill="#a84a42"/>
+    </svg>
+
+    <p class="loading-title">Traçando seu mapa…</p>
+    <p class="loading-subtitle">Analisando suas respostas</p>
+
+    <div class="loading-steps" id="loadingSteps">
+      <div class="loading-step" data-step="1">
+        <span class="loading-step-dot"></span>
+        <span>Lendo suas respostas</span>
+      </div>
+      <div class="loading-step" data-step="2">
+        <span class="loading-step-dot"></span>
+        <span>Cruzando os eixos do seu perfil</span>
+      </div>
+      <div class="loading-step" data-step="3">
+        <span class="loading-step-dot"></span>
+        <span>Encontrando o seu arquétipo</span>
+      </div>
+      <div class="loading-step" data-step="4">
+        <span class="loading-step-dot"></span>
+        <span>Montando o seu plano de ação</span>
+      </div>
+    </div>
+  </div>
+
   <script>
     // ==========================================
     // CONFIGURAÇÃO
     // ==========================================
-    const API_BASE_URL = 'https://beatrizoliveira-mpbq.vercel.app/api';
-    const API_KEY = 'teste'; // ⚠️ deve ser a mesma configurada na Vercel
+    const API_BASE_URL = 'https://beatrizoliveira-sigma.vercel.app/api';
 
-    axios.defaults.headers.common['x-api-key'] = API_KEY;
+    // Pré-carregamento: dispara o fetch ANTES do DOM
+    const fetchPerguntasPromise = axios.get(`${API_BASE_URL}/perguntas`);
 
+    // ==========================================
+    // ESTADO
+    // ==========================================
     const state = {
       perguntas: [],
       currentIndex: 0,
       respostas: {},
+      isAdvancing: false,
     };
 
-    const dom = {
-      progressBar: document.getElementById('progressBar'),
-      progressText: document.getElementById('progressText'),
-      questionText: document.getElementById('questionText'),
-      questionHighlight: document.getElementById('questionHighlight'),
-      questionSuffix: document.getElementById('questionSuffix'),
-      questionSubtitle: document.getElementById('questionSubtitle'),
-      optionsContainer: document.getElementById('optionsContainer'),
-      form: document.getElementById('diagnosticForm'),
-      btnContinue: document.getElementById('btnContinue'),
-      btnText: document.getElementById('btnText'),
-      errorBox: document.getElementById('errorBox')
-    };
+    let dom;
 
-    // ==========================================
-    // HELPERS
-    // ==========================================
+    function bindDom() {
+      dom = {
+        progressBar: document.getElementById('progressBar'),
+        progressText: document.getElementById('progressText'),
+        questionText: document.getElementById('questionText'),
+        questionHighlight: document.getElementById('questionHighlight'),
+        questionSuffix: document.getElementById('questionSuffix'),
+        questionSubtitle: document.getElementById('questionSubtitle'),
+        questionTitle: document.getElementById('questionTitle'),
+        optionsContainer: document.getElementById('optionsContainer'),
+        errorBox: document.getElementById('errorBox'),
+        loadingScreen: document.getElementById('loadingScreen'),
+        loadingSteps: document.getElementById('loadingSteps'),
+      };
+    }
+
     function showError(msg) {
+      if (!dom) return;
       dom.errorBox.textContent = msg;
       dom.errorBox.style.display = 'block';
     }
-
     function hideError() {
+      if (!dom) return;
       dom.errorBox.style.display = 'none';
     }
 
     function updateProgress() {
       const total = state.perguntas.length;
       const current = state.currentIndex + 1;
-      if (total === 0) {
-        dom.progressText.textContent = 'Carregando...';
-        return;
-      }
-      const percent = (current / total) * 100;
-      dom.progressBar.style.width = `${percent}%`;
+      if (total === 0) { dom.progressText.textContent = 'Carregando...'; return; }
+      dom.progressBar.style.width = `${(current / total) * 100}%`;
       dom.progressText.textContent = `${current} de ${total}`;
     }
 
     // ==========================================
-    // RENDERIZAÇÃO DA PERGUNTA
+    // LOADING — anima os passos enquanto o POST rola
+    // ==========================================
+    function showLoading() {
+      dom.loadingScreen.classList.add('is-active');
+      document.body.style.overflow = 'hidden';
+
+      const steps = dom.loadingSteps.querySelectorAll('.loading-step');
+      steps.forEach((el) => el.classList.remove('is-visible', 'is-done'));
+
+      // Revela cada passo com um pequeno atraso
+      steps.forEach((el, i) => {
+        setTimeout(() => {
+          el.classList.add('is-visible');
+        }, 150 * i + 100);
+      });
+    }
+
+    function completeLoadingStep(stepNumber) {
+      const el = dom.loadingSteps.querySelector(`[data-step="${stepNumber}"]`);
+      if (el) el.classList.add('is-done');
+    }
+
+    function hideLoading() {
+      dom.loadingScreen.classList.remove('is-active');
+      document.body.style.overflow = '';
+    }
+
+    // ==========================================
+    // RENDERIZAÇÃO
     // ==========================================
     function renderQuestion() {
       hideError();
@@ -591,8 +700,6 @@
       if (!pergunta) return;
 
       const textoOriginal = pergunta.texto || pergunta.pergunta || '';
-
-      // Destaca a palavra "desafio" no título (mantém o restante do texto)
       const regex = /(desafio)/i;
       if (regex.test(textoOriginal)) {
         const [antes, ...resto] = textoOriginal.split(regex);
@@ -606,24 +713,41 @@
       }
 
       dom.optionsContainer.innerHTML = '';
-      dom.btnContinue.disabled = true;
-
       pergunta.opcoes.forEach((opcao) => {
         const label = document.createElement('label');
         label.className = 'option-card';
+        label.setAttribute('tabindex', '0');
+        label.setAttribute('role', 'radio');
+        label.setAttribute('aria-checked', state.respostas[pergunta.numero] === opcao.id);
 
-        const isChecked = state.respostas[pergunta.numero] === opcao.id;
-        if (isChecked) dom.btnContinue.disabled = false;
+        if (state.respostas[pergunta.numero] === opcao.id) {
+          label.classList.add('is-selected');
+        }
 
         label.innerHTML = `
-          <input type="radio" name="opcao" value="${opcao.id}" ${isChecked ? 'checked' : ''}>
+          <input type="radio" name="opcao" value="${opcao.id}">
           <span class="radio-circle"></span>
           <span class="option-letter">${opcao.letra}</span>
           <span class="option-text">${opcao.texto}</span>
         `;
 
-        label.querySelector('input').addEventListener('change', () => {
-          dom.btnContinue.disabled = false;
+        const input = label.querySelector('input');
+
+        const handleSelect = () => {
+          if (state.isAdvancing) return;
+          if (input.checked) return;
+
+          input.checked = true;
+          label.classList.add('is-selected');
+          state.respostas[pergunta.numero] = opcao.id;
+          state.isAdvancing = true;
+
+          setTimeout(() => advance(), 220);
+        };
+
+        label.addEventListener('click', (e) => { e.preventDefault(); handleSelect(); });
+        label.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSelect(); }
         });
 
         dom.optionsContainer.appendChild(label);
@@ -632,70 +756,83 @@
       updateProgress();
     }
 
-    // ==========================================
-    // NAVEGAÇÃO
-    // ==========================================
-    function handleNextStep() {
-      const perguntaAtual = state.perguntas[state.currentIndex];
-      const formData = new FormData(dom.form);
-      const selectedId = formData.get('opcao');
+    function advance() {
+      dom.questionTitle.classList.add('is-changing');
+      dom.optionsContainer.classList.add('is-changing');
 
-      if (!selectedId) return;
+      setTimeout(() => {
+        state.isAdvancing = false;
 
-      state.respostas[perguntaAtual.numero] = selectedId;
-
-      if (state.currentIndex < state.perguntas.length - 1) {
-        state.currentIndex++;
-        renderQuestion();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      } else {
-        submitToServer();
-      }
+        if (state.currentIndex < state.perguntas.length - 1) {
+          state.currentIndex++;
+          renderQuestion();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          requestAnimationFrame(() => {
+            dom.questionTitle.classList.remove('is-changing');
+            dom.optionsContainer.classList.remove('is-changing');
+          });
+        } else {
+          submitToServer();
+        }
+      }, 200);
     }
 
     // ==========================================
-    // SUBMIT
+    // SUBMIT — com loading animado + redirecionamento
     // ==========================================
     async function submitToServer() {
+      const respostasIds = Object.values(state.respostas);
+
+      if (respostasIds.length !== state.perguntas.length) {
+        showError('Responda todas as perguntas antes de continuar.');
+        return;
+      }
+
+      // Ativa a tela de loading
+      showLoading();
+      completeLoadingStep(1);
+
+      // Animação dos passos em paralelo com o POST
+      const timers = [];
+      timers.push(setTimeout(() => completeLoadingStep(2), 600));
+      timers.push(setTimeout(() => completeLoadingStep(3), 1200));
+
       try {
-        dom.btnContinue.disabled = true;
-        dom.btnText.textContent = 'Processando...';
-        hideError();
-
-        const respostasIds = Object.values(state.respostas);
-
-        if (respostasIds.length !== state.perguntas.length) {
-          throw new Error('Responda todas as perguntas antes de continuar.');
-        }
-
-        const payload = {
-          respostasIds,
-          nome: null,
-          telefone: null
-        };
-
+        const payload = { respostasIds, nome: null, telefone: null };
         console.log('📤 Enviando:', payload);
 
         const response = await axios.post(`${API_BASE_URL}/processar-formulario`, payload);
-
         console.log('✅ Resposta:', response.data);
 
         if (response.data?.sucesso && response.data?.analise) {
+          timers.forEach(clearTimeout);
+          completeLoadingStep(4);
+
+          // Salva a análise para o clareza.html ler
           sessionStorage.setItem('diagnosticoAnalise', response.data.analise);
-          sessionStorage.setItem('diagnosticoPerfil', response.data.reutilizado ? 'reutilizado' : 'novo');
-          alert('Diagnóstico concluído!\n\n' + response.data.analise.slice(0, 200) + '...');
-          // window.location.href = '/resultado.html';
+          sessionStorage.setItem(
+            'diagnosticoPerfil',
+            response.data.reutilizado ? 'reutilizado' : 'novo'
+          );
+
+          // Pequena pausa para o usuário ver o último passo concluído
+          setTimeout(() => {
+            window.location.href = '/clareza.html';
+          }, 700);
         } else {
           throw new Error('Resposta inválida do servidor.');
         }
       } catch (error) {
+        timers.forEach(clearTimeout);
+        hideLoading();
         console.error('❌ Erro:', error);
         let msg = 'Ocorreu um erro ao enviar suas respostas. Tente novamente.';
         if (error.response?.data?.erro) msg = error.response.data.erro;
         else if (error.message) msg = error.message;
         showError(msg);
-        dom.btnContinue.disabled = false;
-        dom.btnText.textContent = 'Tentar novamente';
+        renderQuestion();
+        dom.questionTitle.classList.remove('is-changing');
+        dom.optionsContainer.classList.remove('is-changing');
       }
     }
 
@@ -703,6 +840,8 @@
     // INIT
     // ==========================================
     async function init() {
+      bindDom();
+
       dom.optionsContainer.innerHTML = `
         <div class="option-card skeleton" style="height: 72px;"></div>
         <div class="option-card skeleton" style="height: 72px;"></div>
@@ -710,7 +849,8 @@
       `;
 
       try {
-        const response = await axios.get(`${API_BASE_URL}/perguntas`);
+        const response = await fetchPerguntasPromise;
+        console.log('✅ Perguntas recebidas:', response.data);
 
         if (response.data?.sucesso && response.data?.perguntas?.length > 0) {
           state.perguntas = response.data.perguntas;
@@ -722,20 +862,19 @@
       } catch (error) {
         console.error('❌ Erro no fetch:', error);
         let msg = 'Não foi possível carregar as perguntas.';
-        if (error.response?.status === 401) msg = 'Chave de API inválida ou ausente.';
-        else if (error.response?.status === 403) msg = 'Acesso negado.';
+        if (error.response?.status === 429) msg = 'Muitas requisições. Aguarde alguns minutos.';
+        else if (error.response?.status === 404) msg = 'API não encontrada. Verifique a URL do servidor.';
         else if (error.response?.status === 500) msg = 'Erro interno no servidor.';
-        else if (error.code === 'ERR_NETWORK') msg = 'Servidor indisponível. Verifique a URL da API.';
+        else if (error.code === 'ERR_NETWORK') msg = 'Servidor indisponível. Verifique sua conexão.';
         showError(msg);
       }
     }
 
-    dom.form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      handleNextStep();
-    });
-
-    document.addEventListener('DOMContentLoaded', init);
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
   </script>
 </body>
 </html>
