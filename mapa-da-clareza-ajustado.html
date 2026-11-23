@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#fff0e8">
+  <title>Mapa da Clareza | Beatriz Oliveira</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Allura&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --cream: #fff0e8;
+      --purple: #310b4c;
+      --purple-dark: #290640;
+      --orange: #ff9a68;
+      --orange-line: #ed8a5d;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      background: var(--cream);
+      color: var(--purple-dark);
+      font-family: "DM Sans", sans-serif;
+      overflow-x: hidden;
+    }
+
+    .hero {
+      position: relative;
+      isolation: isolate;
+      width: 100%;
+      min-height: 100svh;
+      overflow: hidden;
+      background: var(--cream);
+    }
+
+    .shape { position: absolute; z-index: -1; pointer-events: none; }
+
+    /* Mancha suave do canto superior esquerdo */
+    .top-orb {
+      width: min(76vw, 420px);
+      aspect-ratio: 1;
+      left: -28vw;
+      top: -15vw;
+      border-radius: 50%;
+      background: #fbe2d7;
+      opacity: .72;
+    }
+
+    .brand {
+      position: absolute;
+      z-index: 2;
+      top: 6.1%;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      white-space: nowrap;
+    }
+
+    .brand-symbol { display: block; width: 48px; height: 54px; flex: none; }
+    .brand-name {
+      color: var(--purple-dark);
+      font-size: 18px;
+      line-height: .98;
+      letter-spacing: -.8px;
+      font-weight: 500;
+    }
+
+    .compass {
+      position: absolute;
+      z-index: 1;
+      width: 72px;
+      height: auto;
+      top: 19%;
+      right: 5.2%;
+      opacity: .92;
+    }
+
+    .content {
+      position: absolute;
+      z-index: 2;
+      top: 42.2%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 91%;
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--purple-dark);
+      font-weight: 800;
+      letter-spacing: -1.35px;
+      line-height: .86;
+    }
+
+    .title-small {
+      display: block;
+      text-align: left;
+      margin-left: 2.5%;
+      font-size: clamp(32px, 13.2vw, 66px);
+      line-height: .95;
+      letter-spacing: -1.7px;
+    }
+
+    .title-script {
+      display: block;
+      margin: -1px 0 0 -1%;
+      font-family: "Allura", cursive;
+      font-size: clamp(65px, 25.8vw, 132px);
+      font-weight: 400;
+      line-height: .83;
+      letter-spacing: -1px;
+      white-space: nowrap;
+      transform: rotate(-2deg);
+    }
+
+    .subtitle {
+      margin: 25px auto 0;
+      color: #35134a;
+      font-size: clamp(13px, 5.15vw, 23px);
+      line-height: 1.42;
+      font-weight: 400;
+      letter-spacing: -.35px;
+    }
+
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 42px;
+      margin-top: 32px;
+      padding: 0 17px;
+      border-radius: 999px;
+      color: #fff;
+      background: linear-gradient(105deg, #3a0d55, #300746);
+      box-shadow: 0 8px 14px rgba(54, 12, 72, .22);
+      text-decoration: none;
+      font-size: clamp(12px, 4.8vw, 20px);
+      font-weight: 700;
+      letter-spacing: -.35px;
+      white-space: nowrap;
+      transition: transform .2s ease, box-shadow .2s ease;
+    }
+
+    .cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 11px 18px rgba(54, 12, 72, .25);
+    }
+    .cta:focus-visible { outline: 3px solid var(--orange-line); outline-offset: 4px; }
+    .cta svg { width: 20px; height: 20px; flex: none; }
+
+    /* Ondas inferiores em camadas, como na referência */
+    .bottom-orange {
+      position: absolute;
+      z-index: -1;
+      left: -12%;
+      bottom: -7.5%;
+      width: 92%;
+      height: 22%;
+      background: linear-gradient(135deg, #ffa273, #ff9868);
+      border-radius: 0 76% 0 0 / 0 82% 0 0;
+      transform: rotate(5deg);
+      transform-origin: left bottom;
+    }
+
+    .bottom-purple {
+      position: absolute;
+      z-index: -1;
+      right: -15%;
+      bottom: -10%;
+      width: 66%;
+      height: 19%;
+      background: linear-gradient(145deg, #5b1c76, #310b4c 78%);
+      border-radius: 90% 0 0 0 / 72% 0 0 0;
+      transform: rotate(-5deg);
+    }
+
+    .bottom-line {
+      position: absolute;
+      z-index: 0;
+      left: 0;
+      bottom: -1%;
+      width: 100%;
+      height: 34%;
+      pointer-events: none;
+    }
+
+    @media (min-width: 600px) {
+      .hero { min-height: 760px; height: 100svh; }
+      .brand { top: 7%; gap: 14px; }
+      .brand-symbol { width: 88px; height: 98px; }
+      .brand-name { font-size: 32px; letter-spacing: -1.4px; }
+      .compass { width: clamp(125px, 17vw, 205px); top: 16%; right: 8%; }
+      .content { top: 39%; width: min(82%, 850px); }
+      .title-small { font-size: clamp(62px, 8vw, 100px); margin-left: 7%; letter-spacing: -3px; }
+      .title-script { font-size: clamp(140px, 18vw, 220px); }
+      .subtitle { margin-top: 35px; font-size: clamp(24px, 3vw, 38px); letter-spacing: -.8px; }
+      .cta { min-height: 70px; padding: 0 38px; gap: 15px; margin-top: 55px; font-size: clamp(23px, 3vw, 34px); }
+      .cta svg { width: 31px; height: 31px; }
+      .bottom-orange { height: 30%; bottom: -11%; }
+      .bottom-purple { height: 24%; bottom: -12%; }
+      .bottom-line { height: 40%; }
+      .top-orb { width: 340px; left: -130px; top: -95px; }
+    }
+
+    @media (max-width: 350px) {
+      .brand { top: 5.8%; }
+      .brand-symbol { width: 43px; height: 49px; }
+      .brand-name { font-size: 16px; }
+      .compass { width: 67px; }
+      .content { top: 42.4%; width: 92%; }
+      .title-small { font-size: 12.8vw; }
+      .title-script { font-size: 25vw; }
+      .subtitle { margin-top: 23px; }
+      .cta { margin-top: 29px; min-height: 39px; }
+    }
+
+    @media (max-height: 620px) and (max-width: 599px) {
+      .content { top: 40%; }
+      .subtitle { margin-top: 18px; }
+      .cta { margin-top: 22px; }
+      .bottom-orange { height: 25%; }
+      .bottom-purple { height: 21%; }
+    }
+
+    @media (prefers-reduced-motion: reduce) { .cta { transition: none; } }
+  </style>
+</head>
+<body>
+  <main class="hero">
+    <div class="shape top-orb" aria-hidden="true"></div>
+
+    <header class="brand" aria-label="Beatriz Oliveira">
+      <svg class="brand-symbol" viewBox="0 0 110 120" role="img" aria-label="Símbolo B">
+        <defs>
+          <linearGradient id="bGradient" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#8d3b91"/>
+            <stop offset=".55" stop-color="#4a126c"/>
+            <stop offset="1" stop-color="#2e0848"/>
+          </linearGradient>
+        </defs>
+        <path d="M12 7 H48 C77 7 91 20 91 39 C91 55 78 65 59 69 C84 70 101 82 101 98 C101 111 88 116 61 116 H12 Z"
+              fill="none" stroke="url(#bGradient)" stroke-width="5.5" stroke-linecap="square" stroke-linejoin="round"/>
+        <path d="M12 7 V116" fill="none" stroke="url(#bGradient)" stroke-width="5.5"/>
+        <path d="M12 77 C27 63 42 55 60 48 C78 41 83 28 75 18 C69 10 58 7 45 7"
+              fill="none" stroke="url(#bGradient)" stroke-width="5.5" stroke-linecap="round"/>
+        <path d="M58 58 L80 72 Q85 75 80 79 L58 94 Q52 98 52 90 V63 Q52 55 58 58Z" fill="#f58a5b"/>
+      </svg>
+      <div class="brand-name">Beatriz<br>Oliveira</div>
+    </header>
+
+    <svg class="compass" viewBox="0 0 260 300" role="img" aria-label="Rosa dos ventos">
+      <defs>
+        <linearGradient id="compassOrange" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#ffad79"/>
+          <stop offset=".52" stop-color="#e9784e"/>
+          <stop offset="1" stop-color="#c95e43"/>
+        </linearGradient>
+      </defs>
+      <circle cx="130" cy="158" r="105" fill="none" stroke="#ed8b60" stroke-width="6"/>
+      <path d="M130 2 L147 145 L130 158 L113 145Z" fill="url(#compassOrange)"/>
+      <path d="M130 298 L113 171 L130 158 L147 171Z" fill="url(#compassOrange)"/>
+      <path d="M0 158 L116 141 L130 158 L116 175Z" fill="#e77c52"/>
+      <path d="M260 158 L144 175 L130 158 L144 141Z" fill="#e77c52"/>
+      <path d="M39 67 L128 145 L130 158 L111 151Z" fill="#d86e4c"/>
+      <path d="M221 67 L149 151 L130 158 L132 145Z" fill="#d86e4c"/>
+      <path d="M39 249 L111 165 L130 158 L128 171Z" fill="#d86e4c"/>
+      <path d="M221 249 L132 171 L130 158 L149 165Z" fill="#d86e4c"/>
+      <path d="M130 2 L130 158 L113 145Z" fill="#ffb17d" opacity=".55"/>
+      <path d="M260 158 L130 158 L144 141Z" fill="#f59a6b" opacity=".55"/>
+      <path d="M130 298 L130 158 L147 171Z" fill="#b94d42" opacity=".38"/>
+      <circle cx="130" cy="158" r="4" fill="#a84a42"/>
+    </svg>
+
+    <section class="content">
+      <h1>
+        <span class="title-small">Mapa da</span>
+        <span class="title-script">Clareza</span>
+      </h1>
+      <p class="subtitle">Descubra onde você está<br>e encontre seu próximo passo.</p>
+      <a class="cta" href="/diagnostico" aria-label="Faça o diagnóstico">
+        <span>Faça o diagnóstico</span>
+        <svg viewBox="0 0 40 40" fill="none" aria-hidden="true">
+          <path d="M5 20H32M21 8L33 20L21 32" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </section>
+
+    <div class="bottom-orange" aria-hidden="true"></div>
+    <div class="bottom-purple" aria-hidden="true"></div>
+    <svg class="bottom-line" viewBox="0 0 1200 420" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M80 420 C180 300 300 330 425 275 C560 215 650 245 790 170 C930 95 1030 145 1145 5"
+            fill="none" stroke="#f18a5c" stroke-width="5" stroke-linecap="round"/>
+    </svg>
+  </main>
+</body>
+</html>

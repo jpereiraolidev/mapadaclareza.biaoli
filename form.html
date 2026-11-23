@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#fff0e8">
+  <title>Diagnóstico | Beatriz Oliveira</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Allura&family=DM+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+  <style>
+    :root {
+      --cream: #fff0e8;
+      --purple: #310b4c;
+      --purple-dark: #290640;
+      --orange: #ff9a68;
+      --orange-line: #ed8a5d;
+      --text-muted: #6a4d7a;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      background: var(--cream);
+      color: var(--purple-dark);
+      font-family: "DM Sans", sans-serif;
+      overflow-x: hidden;
+    }
+
+    .page {
+      position: relative;
+      isolation: isolate;
+      width: 100%;
+      min-height: 100svh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      padding-bottom: 120px;
+    }
+
+    .shape { position: absolute; z-index: -1; pointer-events: none; }
+
+    .top-orb {
+      width: min(76vw, 420px);
+      aspect-ratio: 1;
+      left: -28vw;
+      top: -15vw;
+      border-radius: 50%;
+      background: #fbe2d7;
+      opacity: .72;
+    }
+
+    .header {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 24px 24px 0;
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      white-space: nowrap;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-symbol { display: block; width: 48px; height: 54px; flex: none; }
+    .brand-name {
+      color: var(--purple-dark);
+      font-size: 18px;
+      line-height: .98;
+      letter-spacing: -.8px;
+      font-weight: 500;
+    }
+
+    .header-tag {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--purple);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 10px;
+    }
+    .header-tag::after {
+      content: '';
+      display: block;
+      width: 40px;
+      height: 1px;
+      background: var(--purple);
+      opacity: 0.3;
+    }
+
+    .progress-container {
+      width: 100%;
+      max-width: 800px;
+      margin: 40px auto 0;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      z-index: 2;
+      position: relative;
+    }
+
+    .progress-track {
+      flex: 1;
+      height: 8px;
+      background: #e6d6e6;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #5b1c76, #310b4c);
+      border-radius: 999px;
+      width: 0%;
+      transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .progress-text {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--purple);
+      white-space: nowrap;
+    }
+
+    .compass-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin: 40px auto 24px;
+      width: 100%;
+      max-width: 600px;
+      padding: 0 24px;
+      z-index: 2;
+      position: relative;
+    }
+
+    .compass-divider .line {
+      flex: 1;
+      height: 1px;
+      background: var(--orange-line);
+      opacity: 0.5;
+    }
+
+    .compass-icon {
+      width: 60px;
+      height: auto;
+    }
+
+    .main-content {
+      flex: 1;
+      width: 100%;
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 24px;
+      z-index: 2;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: clamp(28px, 6vw, 44px);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -1.5px;
+      margin: 0 0 12px;
+      color: var(--purple-dark);
+    }
+
+    .title-script {
+      font-family: "Allura", cursive;
+      font-size: clamp(52px, 10vw, 76px);
+      font-weight: 400;
+      color: var(--orange);
+      line-height: 0.8;
+      display: inline-block;
+      margin: 0 4px;
+      transform: rotate(-2deg);
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: clamp(16px, 3vw, 20px);
+      color: var(--text-muted);
+      margin: 0 0 40px;
+      line-height: 1.4;
+    }
+
+    .options-list {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .option-card {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 20px 24px;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1.5px solid rgba(255, 255, 255, 0.9);
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 20px rgba(49, 11, 76, 0.04);
+      position: relative;
+    }
+
+    .option-card:hover {
+      background: rgba(255, 255, 255, 0.95);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(49, 11, 76, 0.08);
+    }
+
+    .option-card input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .radio-circle {
+      width: 28px;
+      height: 28px;
+      border: 2px solid #d5c1d5;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+
+    .radio-circle::after {
+      content: '';
+      width: 14px;
+      height: 14px;
+      background: var(--purple);
+      border-radius: 50%;
+      transform: scale(0);
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .option-card:has(input:checked) {
+      border-color: var(--purple);
+      background: #fff;
+      box-shadow: 0 8px 24px rgba(49, 11, 76, 0.12);
+    }
+
+    .option-card:has(input:checked) .radio-circle {
+      border-color: var(--purple);
+    }
+
+    .option-card:has(input:checked) .radio-circle::after {
+      transform: scale(1);
+    }
+
+    .option-card:has(input:checked) .option-letter {
+      color: var(--purple);
+      border-color: var(--purple);
+    }
+
+    .option-letter {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: transparent;
+      border: 1.5px solid #d5c1d5;
+      color: var(--text-muted);
+      font-weight: 700;
+      font-size: 14px;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+
+    .option-text {
+      font-size: clamp(15px, 2.5vw, 18px);
+      font-weight: 500;
+      color: var(--purple-dark);
+      line-height: 1.3;
+    }
+
+    .btn-continue {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      min-height: 60px;
+      padding: 0 48px;
+      border: none;
+      border-radius: 999px;
+      color: #fff;
+      background: linear-gradient(105deg, #4a126c, #290640);
+      box-shadow: 0 8px 20px rgba(54, 12, 72, 0.25);
+      text-decoration: none;
+      font-family: inherit;
+      font-size: clamp(16px, 3vw, 20px);
+      font-weight: 700;
+      letter-spacing: -.35px;
+      cursor: pointer;
+      transition: transform .2s ease, box-shadow .2s ease, opacity 0.2s ease;
+    }
+
+    .btn-continue:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px rgba(54, 12, 72, 0.3);
+    }
+
+    .btn-continue:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-continue svg { width: 24px; height: 24px; }
+
+    .security-note {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 24px;
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .security-note svg { width: 16px; height: 16px; }
+
+    .bottom-orange {
+      position: absolute;
+      z-index: -1;
+      left: -12%;
+      bottom: -7.5%;
+      width: 92%;
+      height: 22%;
+      background: linear-gradient(135deg, #ffa273, #ff9868);
+      border-radius: 0 76% 0 0 / 0 82% 0 0;
+      transform: rotate(5deg);
+      transform-origin: left bottom;
+    }
+
+    .bottom-purple {
+      position: absolute;
+      z-index: -1;
+      right: -15%;
+      bottom: -10%;
+      width: 66%;
+      height: 19%;
+      background: linear-gradient(145deg, #5b1c76, #310b4c 78%);
+      border-radius: 90% 0 0 0 / 72% 0 0 0;
+      transform: rotate(-5deg);
+    }
+
+    .bottom-line {
+      position: absolute;
+      z-index: 0;
+      left: 0;
+      bottom: -1%;
+      width: 100%;
+      height: 34%;
+      pointer-events: none;
+    }
+
+    .skeleton {
+      background: linear-gradient(90deg, #f0e0e8 25%, #f8e8f0 50%, #f0e0e8 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 8px;
+      color: transparent !important;
+      pointer-events: none;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .error-box {
+      background: #fff0f0;
+      border: 1px solid #ffcccc;
+      color: #cc0000;
+      padding: 16px 24px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+      text-align: center;
+      display: none;
+    }
+
+    @media (min-width: 600px) {
+      .page { padding-bottom: 160px; }
+      .header { padding: 40px 40px 0; }
+      .brand-symbol { width: 60px; height: 68px; }
+      .brand-name { font-size: 22px; }
+      .progress-container { margin-top: 60px; }
+      .compass-divider { margin-top: 50px; }
+      .options-list { gap: 20px; }
+      .option-card { padding: 24px 32px; }
+      .bottom-orange { height: 30%; bottom: -11%; }
+      .bottom-purple { height: 24%; bottom: -12%; }
+      .bottom-line { height: 40%; }
+      .top-orb { width: 340px; left: -130px; top: -95px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .btn-continue, .option-card, .radio-circle::after, .progress-fill { transition: none; }
+      .skeleton { animation: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="shape top-orb" aria-hidden="true"></div>
+
+    <header class="header">
+      <a href="#" class="brand" aria-label="Beatriz Oliveira">
+        <svg class="brand-symbol" viewBox="0 0 110 120" role="img" aria-label="Símbolo B">
+          <defs>
+            <linearGradient id="bGradient" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#8d3b91"/>
+              <stop offset=".55" stop-color="#4a126c"/>
+              <stop offset="1" stop-color="#2e0848"/>
+            </linearGradient>
+          </defs>
+          <path d="M12 7 H48 C77 7 91 20 91 39 C91 55 78 65 59 69 C84 70 101 82 101 98 C101 111 88 116 61 116 H12 Z" fill="none" stroke="url(#bGradient)" stroke-width="5.5" stroke-linecap="square" stroke-linejoin="round"/>
+          <path d="M12 7 V116" fill="none" stroke="url(#bGradient)" stroke-width="5.5"/>
+          <path d="M12 77 C27 63 42 55 60 48 C78 41 83 28 75 18 C69 10 58 7 45 7" fill="none" stroke="url(#bGradient)" stroke-width="5.5" stroke-linecap="round"/>
+          <path d="M58 58 L80 72 Q85 75 80 79 L58 94 Q52 98 52 90 V63 Q52 55 58 58Z" fill="#f58a5b"/>
+        </svg>
+        <div class="brand-name">Beatriz<br>Oliveira</div>
+      </a>
+      <div class="header-tag">Mapa da Clareza</div>
+    </header>
+
+    <div class="progress-container">
+      <div class="progress-track">
+        <div class="progress-fill" id="progressBar"></div>
+      </div>
+      <span class="progress-text" id="progressText">Carregando...</span>
+    </div>
+
+    <div class="compass-divider">
+      <div class="line"></div>
+      <svg class="compass-icon" viewBox="0 0 260 300" aria-hidden="true">
+        <defs>
+          <linearGradient id="compassOrange" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#ffad79"/>
+            <stop offset=".52" stop-color="#e9784e"/>
+            <stop offset="1" stop-color="#c95e43"/>
+          </linearGradient>
+        </defs>
+        <circle cx="130" cy="158" r="105" fill="none" stroke="#ed8b60" stroke-width="6"/>
+        <path d="M130 2 L147 145 L130 158 L113 145Z" fill="url(#compassOrange)"/>
+        <path d="M130 298 L113 171 L130 158 L147 171Z" fill="url(#compassOrange)"/>
+        <path d="M0 158 L116 141 L130 158 L116 175Z" fill="#e77c52"/>
+        <path d="M260 158 L144 175 L130 158 L144 141Z" fill="#e77c52"/>
+        <path d="M39 67 L128 145 L130 158 L111 151Z" fill="#d86e4c"/>
+        <path d="M221 67 L149 151 L130 158 L132 145Z" fill="#d86e4c"/>
+        <path d="M39 249 L111 165 L130 158 L128 171Z" fill="#d86e4c"/>
+        <path d="M221 249 L132 171 L130 158 L149 165Z" fill="#d86e4c"/>
+        <path d="M130 2 L130 158 L113 145Z" fill="#ffb17d" opacity=".55"/>
+        <path d="M260 158 L130 158 L144 141Z" fill="#f59a6b" opacity=".55"/>
+        <path d="M130 298 L130 158 L147 171Z" fill="#b94d42" opacity=".38"/>
+        <circle cx="130" cy="158" r="4" fill="#a84a42"/>
+      </svg>
+      <div class="line"></div>
+    </div>
+
+    <section class="main-content">
+      <div id="errorBox" class="error-box"></div>
+
+      <h1 id="questionTitle">
+        <span id="questionText"></span>
+        <span class="title-script" id="questionHighlight"></span>
+        <span id="questionSuffix"></span>
+      </h1>
+      <p class="subtitle" id="questionSubtitle">Escolha a opção que mais se parece com você:</p>
+
+      <form id="diagnosticForm">
+        <div class="options-list" id="optionsContainer"></div>
+
+        <div style="display: flex; flex-direction: column; align-items: center;">
+          <button type="submit" class="btn-continue" id="btnContinue" disabled>
+            <span id="btnText">Continuar</span>
+            <svg viewBox="0 0 40 40" fill="none" aria-hidden="true">
+              <path d="M5 20H32M21 8L33 20L21 32" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+
+          <div class="security-note">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            Suas respostas são confidenciais
+          </div>
+        </div>
+      </form>
+    </section>
+
+    <div class="bottom-orange" aria-hidden="true"></div>
+    <div class="bottom-purple" aria-hidden="true"></div>
+    <svg class="bottom-line" viewBox="0 0 1200 420" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M80 420 C180 300 300 330 425 275 C560 215 650 245 790 170 C930 95 1030 145 1145 5" fill="none" stroke="#f18a5c" stroke-width="5" stroke-linecap="round"/>
+    </svg>
+  </main>
+
+  <script>
+    // ==========================================
+    // CONFIGURAÇÃO
+    // ==========================================
+    const API_BASE_URL = 'https://beatrizoliveira-mpbq.vercel.app/api';
+    const API_KEY = 'teste'; // ⚠️ deve ser a mesma configurada na Vercel
+
+    axios.defaults.headers.common['x-api-key'] = API_KEY;
+
+    const state = {
+      perguntas: [],
+      currentIndex: 0,
+      respostas: {},
+    };
+
+    const dom = {
+      progressBar: document.getElementById('progressBar'),
+      progressText: document.getElementById('progressText'),
+      questionText: document.getElementById('questionText'),
+      questionHighlight: document.getElementById('questionHighlight'),
+      questionSuffix: document.getElementById('questionSuffix'),
+      questionSubtitle: document.getElementById('questionSubtitle'),
+      optionsContainer: document.getElementById('optionsContainer'),
+      form: document.getElementById('diagnosticForm'),
+      btnContinue: document.getElementById('btnContinue'),
+      btnText: document.getElementById('btnText'),
+      errorBox: document.getElementById('errorBox')
+    };
+
+    // ==========================================
+    // HELPERS
+    // ==========================================
+    function showError(msg) {
+      dom.errorBox.textContent = msg;
+      dom.errorBox.style.display = 'block';
+    }
+
+    function hideError() {
+      dom.errorBox.style.display = 'none';
+    }
+
+    function updateProgress() {
+      const total = state.perguntas.length;
+      const current = state.currentIndex + 1;
+      if (total === 0) {
+        dom.progressText.textContent = 'Carregando...';
+        return;
+      }
+      const percent = (current / total) * 100;
+      dom.progressBar.style.width = `${percent}%`;
+      dom.progressText.textContent = `${current} de ${total}`;
+    }
+
+    // ==========================================
+    // RENDERIZAÇÃO DA PERGUNTA
+    // ==========================================
+    function renderQuestion() {
+      hideError();
+      const pergunta = state.perguntas[state.currentIndex];
+      if (!pergunta) return;
+
+      const textoOriginal = pergunta.texto || pergunta.pergunta || '';
+
+      // Destaca a palavra "desafio" no título (mantém o restante do texto)
+      const regex = /(desafio)/i;
+      if (regex.test(textoOriginal)) {
+        const [antes, ...resto] = textoOriginal.split(regex);
+        dom.questionText.textContent = antes;
+        dom.questionHighlight.textContent = 'desafio';
+        dom.questionSuffix.textContent = resto.join('');
+      } else {
+        dom.questionText.textContent = textoOriginal;
+        dom.questionHighlight.textContent = '';
+        dom.questionSuffix.textContent = '';
+      }
+
+      dom.optionsContainer.innerHTML = '';
+      dom.btnContinue.disabled = true;
+
+      pergunta.opcoes.forEach((opcao) => {
+        const label = document.createElement('label');
+        label.className = 'option-card';
+
+        const isChecked = state.respostas[pergunta.numero] === opcao.id;
+        if (isChecked) dom.btnContinue.disabled = false;
+
+        label.innerHTML = `
+          <input type="radio" name="opcao" value="${opcao.id}" ${isChecked ? 'checked' : ''}>
+          <span class="radio-circle"></span>
+          <span class="option-letter">${opcao.letra}</span>
+          <span class="option-text">${opcao.texto}</span>
+        `;
+
+        label.querySelector('input').addEventListener('change', () => {
+          dom.btnContinue.disabled = false;
+        });
+
+        dom.optionsContainer.appendChild(label);
+      });
+
+      updateProgress();
+    }
+
+    // ==========================================
+    // NAVEGAÇÃO
+    // ==========================================
+    function handleNextStep() {
+      const perguntaAtual = state.perguntas[state.currentIndex];
+      const formData = new FormData(dom.form);
+      const selectedId = formData.get('opcao');
+
+      if (!selectedId) return;
+
+      state.respostas[perguntaAtual.numero] = selectedId;
+
+      if (state.currentIndex < state.perguntas.length - 1) {
+        state.currentIndex++;
+        renderQuestion();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        submitToServer();
+      }
+    }
+
+    // ==========================================
+    // SUBMIT
+    // ==========================================
+    async function submitToServer() {
+      try {
+        dom.btnContinue.disabled = true;
+        dom.btnText.textContent = 'Processando...';
+        hideError();
+
+        const respostasIds = Object.values(state.respostas);
+
+        if (respostasIds.length !== state.perguntas.length) {
+          throw new Error('Responda todas as perguntas antes de continuar.');
+        }
+
+        const payload = {
+          respostasIds,
+          nome: null,
+          telefone: null
+        };
+
+        console.log('📤 Enviando:', payload);
+
+        const response = await axios.post(`${API_BASE_URL}/processar-formulario`, payload);
+
+        console.log('✅ Resposta:', response.data);
+
+        if (response.data?.sucesso && response.data?.analise) {
+          sessionStorage.setItem('diagnosticoAnalise', response.data.analise);
+          sessionStorage.setItem('diagnosticoPerfil', response.data.reutilizado ? 'reutilizado' : 'novo');
+          alert('Diagnóstico concluído!\n\n' + response.data.analise.slice(0, 200) + '...');
+          // window.location.href = '/resultado.html';
+        } else {
+          throw new Error('Resposta inválida do servidor.');
+        }
+      } catch (error) {
+        console.error('❌ Erro:', error);
+        let msg = 'Ocorreu um erro ao enviar suas respostas. Tente novamente.';
+        if (error.response?.data?.erro) msg = error.response.data.erro;
+        else if (error.message) msg = error.message;
+        showError(msg);
+        dom.btnContinue.disabled = false;
+        dom.btnText.textContent = 'Tentar novamente';
+      }
+    }
+
+    // ==========================================
+    // INIT
+    // ==========================================
+    async function init() {
+      dom.optionsContainer.innerHTML = `
+        <div class="option-card skeleton" style="height: 72px;"></div>
+        <div class="option-card skeleton" style="height: 72px;"></div>
+        <div class="option-card skeleton" style="height: 72px;"></div>
+      `;
+
+      try {
+        const response = await axios.get(`${API_BASE_URL}/perguntas`);
+
+        if (response.data?.sucesso && response.data?.perguntas?.length > 0) {
+          state.perguntas = response.data.perguntas;
+          state.currentIndex = 0;
+          renderQuestion();
+        } else {
+          showError('Nenhuma pergunta encontrada no servidor.');
+        }
+      } catch (error) {
+        console.error('❌ Erro no fetch:', error);
+        let msg = 'Não foi possível carregar as perguntas.';
+        if (error.response?.status === 401) msg = 'Chave de API inválida ou ausente.';
+        else if (error.response?.status === 403) msg = 'Acesso negado.';
+        else if (error.response?.status === 500) msg = 'Erro interno no servidor.';
+        else if (error.code === 'ERR_NETWORK') msg = 'Servidor indisponível. Verifique a URL da API.';
+        showError(msg);
+      }
+    }
+
+    dom.form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      handleNextStep();
+    });
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
